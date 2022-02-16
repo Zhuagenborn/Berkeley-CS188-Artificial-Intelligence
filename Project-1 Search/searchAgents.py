@@ -290,6 +290,31 @@ def euclideanHeuristic(position, problem, info={}):
 #####################################################
 
 
+class CornersState:
+    """
+    :note: The class must implement `__eq__` and `__hash__`, otherwise it cannot be used with `set`.
+    """
+
+    def __init__(self, pacmanPos, corners, visited=set()):
+        self.corners = corners
+        self.pacmanPos = pacmanPos
+        self.visited = visited.copy()
+        if pacmanPos in corners:
+            self.visited.add(pacmanPos)
+
+    def movePacman(self, pos):
+        return CornersState(pos, self.corners, self.visited)
+
+    def hasVisitedAll(self):
+        return len(self.visited) == len(self.corners)
+
+    def __eq__(self, o):
+        return self.pacmanPos == o.pacmanPos and self.visited == o.visited and self.corners == o.corners
+
+    def __hash__(self):
+        return hash((self.corners, self.pacmanPos, tuple(self.visited)))
+
+
 class CornersProblem(search.SearchProblem):
     """
     This search problem finds paths through all four corners of a layout.
@@ -312,6 +337,7 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        self._startState = CornersState(self.startingPosition, self.corners)
 
     def getStartState(self):
         """
@@ -319,14 +345,14 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self._startState
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return state.hasVisitedAll()
 
     def getSuccessors(self, state):
         """
@@ -349,6 +375,13 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
+            x, y = state.pacmanPos
+            dX, dY = Actions.directionToVector(action)
+            nextX, nextY = int(x + dX), int(y + dY)
+            hitWall = self.walls[nextX][nextY]
+            if not hitWall:
+                newState = state.movePacman((nextX, nextY))
+                successors.append((newState, action, 1))
 
         self._expanded += 1  # DO NOT CHANGE
         return successors
