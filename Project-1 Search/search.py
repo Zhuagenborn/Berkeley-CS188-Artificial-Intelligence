@@ -20,6 +20,51 @@ Pacman agents (in searchAgents.py).
 import util
 
 
+class SearchNode:
+    def __init__(self, state, path=[], cost=0):
+        self.state = state
+        self.path = path
+        self.cost = cost
+
+
+def search(problem, containerType, gFunc=None, hFunc=None):
+    """Find a path to the destination.
+
+    :param problem: The game problem.
+    :param containerType: A node container type, can be `util.Stack`, `util.Queue` or `util.PriorityQueue`.
+    :param gFunc: A callback with three parameter: the current search node, a successor and the game problem.
+    :param hFunc: A heuristic callback with two parameter: a state and the game problem.
+    """
+    container = containerType()
+    if containerType == util.PriorityQueue:
+        assert(gFunc)
+        container.push(SearchNode(problem.getStartState()), 0)
+    else:
+        container.push(SearchNode(problem.getStartState()))
+
+    visited = set()
+    while not container.isEmpty():
+        node = container.pop()
+        if node.state in visited:
+            continue
+        elif problem.isGoalState(node.state):
+            return node.path
+
+        visited.add(node.state)
+        for successor in problem.getSuccessors(node.state):
+            newState, dir, stepCost = successor
+            if newState not in visited:
+                if containerType == util.PriorityQueue:
+                    heuristic = gFunc(node, successor, problem)
+                    if hFunc:
+                        heuristic += hFunc(newState, problem)
+                    container.push(
+                        SearchNode(newState, node.path + [dir], node.cost + stepCost), heuristic)
+                else:
+                    container.push(SearchNode(newState, node.path + [dir]))
+    return []
+
+
 class SearchProblem:
     """
     This class outlines the structure of a search problem, but doesn't implement
