@@ -34,6 +34,9 @@ description for details.
 Good luck and happy searching!
 """
 
+from itertools import permutations
+import math
+
 from game import Directions
 from game import Agent
 from game import Actions
@@ -420,7 +423,20 @@ def cornersHeuristic(state, problem):
     walls = problem.walls
 
     "*** YOUR CODE HERE ***"
-    return 0  # Default to trivial solution
+    unvisited = [corner for corner in corners if corner not in state.visited]
+    if not unvisited:
+        return 0
+
+    heuristic = math.inf
+    for path in permutations(unvisited):
+        dist = 0
+        currPos = state.pacmanPos
+        for corner in path:
+            dist += util.manhattanDistance(currPos, corner)
+            currPos = corner
+        heuristic = min(heuristic, dist)
+
+    return heuristic  # Default to trivial solution
 
 
 class AStarCornersAgent(SearchAgent):
