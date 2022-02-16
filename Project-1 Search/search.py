@@ -27,6 +27,17 @@ class SearchNode:
         self.cost = cost
 
 
+def totalCost(searchNode, successor, problem=None):
+    """Get the total cost from the beginning to a successor.
+
+    :param searchNode: The current search node.
+    :param successor: A successor returned by `SearchProblem.getSuccessors`.
+    :param problem: The game problem.
+    """
+    stepCost = successor[2]
+    return searchNode.cost + stepCost
+
+
 def search(problem, containerType, gFunc=None, hFunc=None):
     """Find a path to the destination.
 
@@ -134,19 +145,19 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return search(problem, util.Stack)
 
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return search(problem, util.Queue)
 
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return search(problem, util.PriorityQueue, totalCost)
 
 
 def nullHeuristic(state, problem=None):
@@ -160,7 +171,7 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return search(problem, util.PriorityQueue, totalCost, heuristic)
 
 
 # Abbreviations
