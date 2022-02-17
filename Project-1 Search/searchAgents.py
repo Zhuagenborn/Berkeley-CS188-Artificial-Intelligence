@@ -34,6 +34,7 @@ description for details.
 Good luck and happy searching!
 """
 
+from inspect import istraceback
 from itertools import permutations
 import math
 
@@ -312,6 +313,7 @@ class CornersState:
         return len(self.visited) == len(self.corners)
 
     def __eq__(self, o):
+        assert isinstance(o, CornersState)
         return self.pacmanPos == o.pacmanPos and self.visited == o.visited and self.corners == o.corners
 
     def __hash__(self):
