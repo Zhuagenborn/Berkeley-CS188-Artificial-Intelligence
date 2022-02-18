@@ -315,6 +315,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
     """
       Your expectimax agent (question 4)
     """
+    _pacman = 0
 
     def getAction(self, gameState):
         """
@@ -324,7 +325,59 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        self._ghosts = [i for i in range(
+            self._pacman + 1, gameState.getNumAgents())]
+        assert self._ghosts
+
+        actions = []
+        for action in gameState.getLegalActions(self._pacman):
+            newState = gameState.generateSuccessor(self._pacman, action)
+            actions.append(
+                (action, self._getExpectimaxValue(newState, self._ghosts[0], 0)))
+        return max(actions, key=lambda k: k[1])[0]
+
+    def _getExpectimaxValue(self, gameState, agent, currDepth):
+        """Do an Expectimax Search for an agent.
+
+        :param gameState: A game state.
+        :param agent: An agent, can be Pac-Man or a ghost.
+        :param currDepth: The current search depth.
+        """
+        def expValue(gameState, ghost, currDepth):
+            assert ghost != self._pacman
+            assert not searchTerminate(gameState, currDepth, self.depth)
+            score = 0
+            actions = gameState.getLegalActions(ghost)
+            prob = 1 / len(actions)
+            for action in actions:
+                newState = gameState.generateSuccessor(ghost, action)
+
+                if ghost != self._ghosts[-1]:
+                    # All ghosts move in order of increasing index.
+                    score += prob * \
+                        self._getExpectimaxValue(
+                            newState, ghost + 1, currDepth)
+                else:
+                    # It is the last ghost, it's time for Pac-Man in the next round.
+                    score += prob * \
+                        self._getExpectimaxValue(
+                            newState, self._pacman, currDepth + 1)
+            return score
+
+        def maxValue(gameState, currDepth):
+            assert not searchTerminate(gameState, currDepth, self.depth)
+            best = -math.inf
+            for action in gameState.getLegalActions(self._pacman):
+                newState = gameState.generateSuccessor(self._pacman, action)
+                best = max(best, self._getExpectimaxValue(
+                    newState, self._ghosts[0], currDepth))
+            return best
+
+        if searchTerminate(gameState, currDepth, self.depth):
+            return self.evaluationFunction(gameState)
+        else:
+            return maxValue(gameState, currDepth) if agent == self._pacman \
+                else expValue(gameState, agent, currDepth)
 
 
 def betterEvaluationFunction(currentGameState):
