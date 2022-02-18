@@ -228,13 +228,87 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     """
     Your minimax agent with alpha-beta pruning (question 3)
     """
+    _pacman = 0
 
     def getAction(self, gameState):
         """
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        self._ghosts = [i for i in range(
+            self._pacman + 1, gameState.getNumAgents())]
+        assert self._ghosts
+
+        alpha = -math.inf
+        bestAction = Directions.STOP
+        for action in gameState.getLegalActions(self._pacman):
+            newState = gameState.generateSuccessor(self._pacman, action)
+            newValue = self._getMinimaxValue(
+                newState, self._ghosts[0], 0, alpha, math.inf)
+            if newValue > alpha:
+                alpha = newValue
+                bestAction = action
+        return bestAction
+
+    def _getMinimaxValue(self, gameState, agent, currDepth, alpha, beta):
+        """
+        Do a Minimax Search with Alpha-Beta Pruning for an agent.
+        For Pac-Man, it returns the max value.
+        For a ghost, it returns the min value.
+
+        :param gameState: A game state.
+        :param agent: An agent, can be Pac-Man or a ghost.
+        :param currDepth: The current search depth.
+        :param alpha: The best (highest-value) choice we have found so far along the path of Maximizers from the current state to the root.
+        :param beta: The best (lowest-value) choice we have found so far along the path of Minimizers from the current state to the root.
+        """
+        def minValue(gameState, ghost, currDepth, alpha, beta):
+            assert ghost != self._pacman
+            assert not searchTerminate(gameState, currDepth, self.depth)
+            best = math.inf
+            for action in gameState.getLegalActions(ghost):
+                newState = gameState.generateSuccessor(ghost, action)
+
+                if ghost != self._ghosts[-1]:
+                    # All ghosts move in order of increasing index.
+                    best = min(best, self._getMinimaxValue(
+                        newState, ghost + 1, currDepth, alpha, beta))
+                else:
+                    # It is the last ghost, it's time for Pac-Man in the next round.
+                    best = min(best, self._getMinimaxValue(
+                        newState, self._pacman, currDepth + 1, alpha, beta))
+                if best < alpha:
+                    # Return the current minimum value.
+                    # It is not a precise value of the current state, just to indicate the value may be worse.
+                    # This has been enough for the Maximizer in the upper level.
+                    # Because the Maximizer will not select the current state, it already has a better choice.
+                    return best
+                else:
+                    beta = min(beta, best)
+            return best
+
+        def maxValue(gameState, currDepth, alpha, beta):
+            assert not searchTerminate(gameState, currDepth, self.depth)
+            best = -math.inf
+            for action in gameState.getLegalActions(self._pacman):
+                newState = gameState.generateSuccessor(self._pacman, action)
+                best = max(best, self._getMinimaxValue(
+                    newState, self._ghosts[0], currDepth, alpha, beta))
+                if best > beta:
+                    # Return the current maximum value.
+                    # It is not a precise value of the current state, just to indicate the value may be worse.
+                    # This has been enough for the Minimizer in the upper level.
+                    # Because the Minimizer will not select the current state, it already has a better choice.
+                    return best
+                else:
+                    alpha = max(alpha, best)
+            return best
+
+        if searchTerminate(gameState, currDepth, self.depth):
+            return self.evaluationFunction(gameState)
+        else:
+            return maxValue(gameState, currDepth, alpha, beta) if agent == self._pacman \
+                else minValue(gameState, agent, currDepth, alpha, beta)
 
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
