@@ -385,10 +385,16 @@ def betterEvaluationFunction(currentGameState):
     Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
     evaluation function (question 5).
 
-    DESCRIPTION: <write something here so we know what you did>
+    DESCRIPTION: Evaluate a game state by the distance from Pac-Man to the nearest food.
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    pos = currentGameState.getPacmanPosition()
+    score = currentGameState.getScore()
+    nearestFoodDist = math.inf
+    for food in currentGameState.getFood().asList():
+        nearestFoodDist = min(
+            nearestFoodDist, util.manhattanDistance(pos, food))
+    return score + 1 / nearestFoodDist
 
 
 # Abbreviation
