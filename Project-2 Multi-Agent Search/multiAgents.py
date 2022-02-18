@@ -16,6 +16,7 @@ from util import manhattanDistance
 from game import Directions
 import random
 import util
+import math
 
 from game import Agent
 
@@ -111,6 +112,13 @@ def scoreEvaluationFunction(currentGameState):
     return currentGameState.getScore()
 
 
+def searchTerminate(gameState, currDepth, maxDepth):
+    """
+    Whether the search has ended.
+    """
+    return currDepth >= maxDepth or gameState.isWin() or gameState.isLose()
+
+
 class MultiAgentSearchAgent(Agent):
     """
     This class provides some common elements to all of your
@@ -136,6 +144,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
     """
     Your minimax agent (question 2)
     """
+    _pacman = 0
 
     def getAction(self, gameState):
         """
@@ -161,7 +170,58 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        self._ghosts = [i for i in range(
+            self._pacman + 1, gameState.getNumAgents())]
+        assert self._ghosts
+
+        actions = []
+        for action in gameState.getLegalActions(self._pacman):
+            newState = gameState.generateSuccessor(self._pacman, action)
+            actions.append(
+                (action, self._getMinimaxValue(newState, self._ghosts[0], 0)))
+        return max(actions, key=lambda k: k[1])[0]
+
+    def _getMinimaxValue(self, gameState, agent, currDepth):
+        """
+        Do a Minimax Search for an agent.
+        For Pac-Man, it returns the max value.
+        For a ghost, it returns the min value.
+
+        :param gameState: A game state.
+        :param agent: An agent, can be Pac-Man or a ghost.
+        :param currDepth: The current search depth.
+        """
+        def minValue(gameState, ghost, currDepth):
+            assert ghost != self._pacman
+            assert not searchTerminate(gameState, currDepth, self.depth)
+            best = math.inf
+            for action in gameState.getLegalActions(ghost):
+                newState = gameState.generateSuccessor(ghost, action)
+
+                if ghost != self._ghosts[-1]:
+                    # All ghosts move in order of increasing index.
+                    best = min(best, self._getMinimaxValue(
+                        newState, ghost + 1, currDepth))
+                else:
+                    # It is the last ghost, it's time for Pac-Man in the next round.
+                    best = min(best, self._getMinimaxValue(
+                        newState, self._pacman, currDepth + 1))
+            return best
+
+        def maxValue(gameState, currDepth):
+            assert not searchTerminate(gameState, currDepth, self.depth)
+            best = -math.inf
+            for action in gameState.getLegalActions(self._pacman):
+                newState = gameState.generateSuccessor(self._pacman, action)
+                best = max(best, self._getMinimaxValue(
+                    newState, self._ghosts[0], currDepth))
+            return best
+
+        if searchTerminate(gameState, currDepth, self.depth):
+            return self.evaluationFunction(gameState)
+        else:
+            return maxValue(gameState, currDepth) if agent == self._pacman \
+                else minValue(gameState, agent, currDepth)
 
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
