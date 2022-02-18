@@ -79,7 +79,25 @@ class ReflexAgent(Agent):
             ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+        newFoodPos = newFood.asList()
+        newGhostPos = [ghostState.getPosition()
+                       for ghostState in newGhostStates]
+        ghostScared = any(newScaredTimes)
+        if not ghostScared and newPos in newGhostPos:
+            return -1
+        # Warning:
+        # Cannot use `newFood.asList()` here.
+        # If there is a food at Pac-Man's new position,
+        # `newFood.asList()` will not contain it because it will be eaten.
+        # We must use `currentGameState.getFood().asList()` which contains this food.
+        elif newPos in currentGameState.getFood().asList():
+            return 1
+        else:
+            minFoodDist = min([util.manhattanDistance(pos, newPos)
+                              for pos in newFoodPos])
+            minGhostDist = min([util.manhattanDistance(pos, newPos)
+                               for pos in newGhostPos])
+            return 1 / minFoodDist - 1 / minGhostDist
 
 
 def scoreEvaluationFunction(currentGameState):
