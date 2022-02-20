@@ -1,6 +1,6 @@
 # Multi-Agent Search
 
-![Cover](Cover.png)
+![Cover](images/Cover.png)
 
 ## Introduction
 
@@ -165,7 +165,7 @@ The `AlphaBetaAgent` *Minimax* values should be identical to the `MinimaxAgent` 
 
 The pseudo-code below represents the algorithm you should implement for this question.
 
-![Alpha-Beta-Pseudo](Alpha-Beta-Pseudo.png)
+![Alpha-Beta-Pseudo](images/Alpha-Beta-Pseudo.png)
 
 To test and debug your code, run
 

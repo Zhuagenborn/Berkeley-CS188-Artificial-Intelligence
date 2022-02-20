@@ -1,6 +1,6 @@
 # Search
 
-![Cover](Cover.png)
+![Cover](images/Cover.png)
 
 ## Introduction
 
@@ -196,7 +196,7 @@ Note that `AStarCornersAgent` is a shortcut for
 -p SearchAgent -a fn=aStarSearch,prob=CornersProblem,heuristic=cornersHeuristic
 ```
 
-**Admissibility vs. Consistency:** Remember, heuristics are just functions that take search states and return numbers that estimate the cost to a nearest goal. More effective heuristics will return values closer to the actual goal costs. To be admissible, the heuristic values must be lower bounds on the actual shortest path cost to the nearest goal (and non-negative). To be consistent, it must additionally hold that if an action has cost *c*, then taking that action can only cause a drop in heuristic of at most *c*.
+**Admissibility vs. Consistency:** Remember, heuristics are just functions that take search states and return numbers that estimate the cost to a nearest goal. More effective heuristics will return values closer to the actual goal costs. To be admissible, the heuristic values must be lower bounds on the actual shortest path cost to the nearest goal (and non-negative). To be consistent, it must additionally hold that if an action has cost $c$, then taking that action can only cause a drop in heuristic of at most $c$.
 
 **Non-Trivial Heuristics:** The trivial heuristics are the ones that return zero everywhere (*UCS*) and the heuristic which computes the true completion cost. The former won't save you any time, while the latter will timeout the autograder. You want a heuristic which reduces total compute time.
 
