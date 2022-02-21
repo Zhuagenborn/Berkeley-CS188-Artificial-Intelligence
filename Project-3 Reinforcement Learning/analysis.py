@@ -20,8 +20,12 @@
 # value iteration.
 
 def question2():
+    """
+    Make the agent try to cross the bridge.
+    """
     answerDiscount = 0.9
-    answerNoise = 0.2
+    # The agent is not in danger of falling off the bridge.
+    answerNoise = 0.0
     return answerDiscount, answerNoise
 
 
