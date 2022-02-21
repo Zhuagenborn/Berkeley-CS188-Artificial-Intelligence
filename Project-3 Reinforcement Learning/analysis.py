@@ -30,43 +30,68 @@ def question2():
 
 
 def question3a():
-    answerDiscount = None
-    answerNoise = None
-    answerLivingReward = None
+    """
+    Make the agent prefer the close exit, risking the cliff.
+    """
+    # Walking a long way to the distant exit only gets small rewards.
+    answerDiscount = 0.1
+    # Not in danger of falling off the cliff.
+    answerNoise = 0.0
+    # Try to end the game quickly.
+    answerLivingReward = -0.1
     return answerDiscount, answerNoise, answerLivingReward
-    # If not possible, return 'NOT POSSIBLE'
 
 
 def question3b():
-    answerDiscount = None
-    answerNoise = None
-    answerLivingReward = None
+    """
+    Make the agent prefer the close exit, avoiding the cliff.
+    """
+    # Walking a long way to the distant exit only gets small rewards.
+    answerDiscount = 0.1
+    # In danger of falling off the cliff.
+    answerNoise = 0.1
+    # Try to end the game quickly.
+    answerLivingReward = -0.1
     return answerDiscount, answerNoise, answerLivingReward
-    # If not possible, return 'NOT POSSIBLE'
 
 
 def question3c():
-    answerDiscount = None
-    answerNoise = None
-    answerLivingReward = None
+    """
+    Make the agent prefer the distant exit, risking the cliff.
+    """
+    # Walking a long way to the distant exit can get large rewards.
+    answerDiscount = 0.9
+    # Not in danger of falling off the cliff.
+    answerNoise = 0
+    # Staying alive has no reward.
+    answerLivingReward = 0.0
     return answerDiscount, answerNoise, answerLivingReward
-    # If not possible, return 'NOT POSSIBLE'
 
 
 def question3d():
-    answerDiscount = None
-    answerNoise = None
-    answerLivingReward = None
+    """
+    Make the agent prefer the distant exit, avoiding the cliff.
+    """
+    # Walking a long way to the distant exit can get large rewards.
+    answerDiscount = 0.9
+    # In danger of falling off the cliff.
+    answerNoise = 0.1
+    # Staying alive has no reward.
+    answerLivingReward = 0
     return answerDiscount, answerNoise, answerLivingReward
-    # If not possible, return 'NOT POSSIBLE'
 
 
 def question3e():
-    answerDiscount = None
-    answerNoise = None
-    answerLivingReward = None
+    """
+    Make the agent avoid both exits and the cliff.
+    """
+    # Walking a long way to the distant exit only gets small rewards.
+    answerDiscount = 0.1
+    # In danger of falling off the cliff.
+    answerNoise = 0.8
+    # Staying alive can be very rewarding.
+    answerLivingReward = 2.0
     return answerDiscount, answerNoise, answerLivingReward
-    # If not possible, return 'NOT POSSIBLE'
 
 
 def question8():
