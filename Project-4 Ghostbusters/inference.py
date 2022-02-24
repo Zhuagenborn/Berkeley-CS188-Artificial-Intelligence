@@ -306,8 +306,12 @@ class ExactInference(InferenceModule):
         position is known.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
-
+        jailPos = self.getJailPosition()
+        pacmanPos = gameState.getPacmanPosition()
+        for ghostPos in self.allPositions:
+            likelihood = self.getObservationProb(
+                observation, pacmanPos, ghostPos, jailPos)
+            self.beliefs[ghostPos] = self.beliefs[ghostPos] * likelihood
         self.beliefs.normalize()
 
     def elapseTime(self, gameState):
@@ -320,7 +324,15 @@ class ExactInference(InferenceModule):
         current position is known.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        newBeliefs = DiscreteDistribution()
+        for oldPos in self.allPositions:
+            newPosDist = self.getPositionDistribution(gameState, oldPos)
+            oldPosProb = self.beliefs[oldPos]
+            for newPos in newPosDist.keys():
+                newPosProb = newPosDist[newPos]
+                newBeliefs[newPos] += newPosProb * oldPosProb
+        self.beliefs = newBeliefs
+        self.beliefs.normalize()
 
     def getBeliefDistribution(self):
         return self.beliefs
